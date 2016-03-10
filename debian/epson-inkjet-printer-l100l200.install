@@ -1,0 +1,10 @@
+# Watermark come with each driver, and can be referenced from PPDs,
+# so we put them in a driver-specific location.
+l100l200/watermark /usr/share/epson-inkjet-printer/l100l200/
+
+# Resource files will be looked up by the CUPS filter and need
+# to be placed in a common place, regardless of the driver.
+l100l200/resource  /usr/share/epson-inkjet-printer/
+
+# Put PPDs in a common location too for CUPS to easily find them
+l100l200/ppds      /usr/share/epson-inkjet-printer/

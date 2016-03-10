@@ -39,3 +39,13 @@ src/raster/blendSource/Makefile.in
 src/epson_inkjet_printer_filter
 
 */lib*/*.so
+
+/debian/*.debhelper*
+/debian/*.substvars
+/debian/epson-inkjet-printer-filter
+/debian/epson-inkjet-printer-l100l200
+/debian/files
+/debian/autoreconf.after
+/debian/autoreconf.before
+/debian/printer-driver-escp
+/debian/tmp/

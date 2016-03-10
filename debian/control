@@ -1,0 +1,56 @@
+Source: epson-inkjet-printer
+Section: graphics
+Priority: extra
+Maintainer: Seiko Epson Corporation <linux-printer@epson.jp>
+Build-Depends: debhelper (>= 4.0.0),
+               autoconf,
+               automake,
+               autotools-dev,
+               dh-autoreconf,
+               libcupsys2-dev | libcups2-dev,
+               libcupsimage2-dev,
+               libjpeg8,
+               libstdc++6
+Standards-Version: 3.7.2
+
+Package: epson-inkjet-printer-filter
+Architecture: i386 amd64
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: CUPS filter - Epson Inkjet Printer Driver
+ This software is a filter program used with Common UNIX Printing
+ System (CUPS) from the Linux. This can supply the high quality print
+ with Seiko Epson Color Ink Jet Printers.
+
+Package: epson-inkjet-printer-l100l200
+Architecture: i386 amd64
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         epson-inkjet-printer-filter
+Provides: printer-driver-l100l200
+Replaces: printer-driver-l100l200
+Conflicts: printer-driver-l100l200
+Description: L100 / L200 - Epson Inkjet Printer Driver
+ This software is a filter program used with Common UNIX Printing
+ System (CUPS) from the Linux. This can supply the high quality print
+ with Seiko Epson Color Ink Jet Printers.
+ .
+ This printer driver is supporting the following printers.
+ .
+ L100
+ L101
+ L200
+ L201
+ .
+ For detail list of supported printer, please refer to below site:
+ http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX
+
+Package: printer-driver-escp
+Architecture: all
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         epson-inkjet-printer-filter,
+         epson-inkjet-printer-l100l200
+Description: printer driver for Epson Inkjet that use ESC/P
+ This metapackage will install the CUPS filter ESC/P driver and every
+ related driver for specific printers depending on it.

@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+SOURCE_NAME    = $(shell dpkg-parsechangelog | sed -n 's/^Source: \(.*\)/\1/ p')
+
+L100L200_NAME  = l100l200
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_install:
+	dh_install
+
+	# Get the architecture specific files in their right places
+	mkdir -p $(CURDIR)/debian/$(SOURCE_NAME)-$(L100L200_NAME)/usr/lib/epson-inkjet-printer/
+ifeq (i386,$(DEB_HOST_ARCH))
+	install -c -m 644 $(L100L200_NAME)/lib/libEpson_* \
+		$(CURDIR)/debian/$(SOURCE_NAME)-$(L100L200_NAME)/usr/lib/epson-inkjet-printer/
+endif
+ifeq (amd64,$(DEB_HOST_ARCH))
+	install -c -m 755 $(L100L200_NAME)/lib64/libEpson_* \
+		$(CURDIR)/debian/$(SOURCE_NAME)-$(L100L200_NAME)/usr/lib/epson-inkjet-printer/
+endif

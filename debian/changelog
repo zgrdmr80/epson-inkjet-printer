@@ -1,0 +1,7 @@
+epson-inkjet-printer (1.0.0-0) eos; urgency=medium
+
+  * Initial release of ESC/P drivers for Epson printers including
+    a package for the epson-inkjet-printer-filter CUPS filter as
+    well as an extra package for the L100/L200 ESC/P driver.
+
+ -- Mario Sanchez Prada <mario@endlessm.com>  Thu, 10 Mar 2016 13:48:51 +0000

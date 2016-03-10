@@ -1,0 +1,2 @@
+# Create symlinks to the PPDs directory for CUPS to find them all
+/usr/share/epson-inkjet-printer/ppds /usr/share/ppd/epson-inkjet-printer

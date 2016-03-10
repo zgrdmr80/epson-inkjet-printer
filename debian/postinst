@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -x /etc/init.d/cups ]; then
+   cups="cups"
+else
+    if [ -x /etc/init.d/cupsys ]; then
+        cups="cupsys"
+    fi
+fi
+if [ ! -z "$cups" ]; then
+    if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+        invoke-rc.d $cups restart 2>/dev/null || true
+    else
+        /etc/init.d/$cups restart 2>/dev/null || true
+    fi
+fi
