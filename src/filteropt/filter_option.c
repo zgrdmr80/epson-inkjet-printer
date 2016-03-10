@@ -95,7 +95,7 @@ static EpsFilterOption filterOptionWatermarkDensity = {
 };
 
 static EpsFilterOption filterOptionWatermarkColor = {
-	"ColorWatermark",
+	"ColurWatermark",
 	7,
 	{
 		{"Black", EPS_PAGE_WATERMARK_COLOR_BLACK},
@@ -128,8 +128,7 @@ static EpsFilterOption filterOptionWatermarkSize = {
 ppd_attr_t * get_ppd_attr(const char * name, int isFirst)
 {
 	ppd_attr_t * attr = NULL;
-	debug_msg("%s:%d \t\t<<%s>>: Trace in\n", __FILE__, __LINE__, __FUNCTION__);
-	debug_msg("%s:%d \t\t<<%s>>: \t\tGet [%s] option\n", __FILE__, __LINE__, __FUNCTION__, name);
+
 	if (isFirst) {
 		attr = ppdFindAttr(PPD, name, NULL);
 	} else {
@@ -141,7 +140,7 @@ ppd_attr_t * get_ppd_attr(const char * name, int isFirst)
 		debuglog(("PPD Attribute %s -> %s", name, attr->value));
 	}
 #endif
-	debug_msg("%s:%d \t\t<<%s>>: Trace out\n", __FILE__, __LINE__, __FUNCTION__);
+
 	return attr;
 }
 
@@ -191,7 +190,7 @@ static int get_filter_option(int *value, EpsFilterOption option)
 	
 	error = 0;
 
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);	 
+	
 	choice = (char *) get_option_for_job (option.keyword);
 	if (choice == NULL) {
 		choice = get_default_choice (option.keyword);
@@ -204,18 +203,17 @@ static int get_filter_option(int *value, EpsFilterOption option)
 	for (i = 0; i < option.choice_num; i++) {
 		if (strcmp(choice, option.choiceList[i].choice) == 0) {
 			*value = option.choiceList[i].value;
-			debug_msg("%s:%d \t\t Option=%s Choice=%s\n", __FILE__, __LINE__, __FUNCTION__, option.keyword, choice);
+			debuglog(("Option=%s Choice=%s", option.keyword, choice));
 			break;
 		}
 	}
 
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace out\n", __FILE__, __LINE__, __FUNCTION__);	 
 	return error;
 }
  
 int setup_filter_option (EpsFilterPrintOption *filterPrintOption)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);	 
+	debuglog(("TRACE IN"));
 	
 	char		*choice;
 	int		value;
@@ -300,7 +298,7 @@ int setup_filter_option (EpsFilterPrintOption *filterPrintOption)
 	}
 
 	error = 0;
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace out\n", __FILE__, __LINE__, __FUNCTION__);
+	debuglog(("TRACE OUT=%d", error));
 
 	return error;
 }

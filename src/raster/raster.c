@@ -40,7 +40,6 @@ typedef struct EpsRaster {
 static int
 output_to_printer(PIPEOUT_HANDLE handle, char * raster_p, int raster_bytes, int pixel_num, int * outraster)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRaster * raster = (EpsRaster *) handle;
 	int r_bytes = 0;
 	int r_pixels = 0;
@@ -53,8 +52,6 @@ output_to_printer(PIPEOUT_HANDLE handle, char * raster_p, int raster_bytes, int 
 		raster->output_raster_index++;
 		r_bytes = raster->pipeline->page.prt_print_area_x * raster->pipeline->page.bytes_per_pixel;
 		r_pixels = raster->pipeline->page.prt_print_area_x;
-		debug_msg("%s:%d \t\t<<%s>>: r_bytes = %d\n", __FILE__, __LINE__, __FUNCTION__, r_bytes);
-		debug_msg("%s:%d \t\t<<%s>>: r_pixels = %d\n", __FILE__, __LINE__, __FUNCTION__, r_pixels);
 
 		if (raster->output_raster_index <= raster->pipeline->page.prt_print_area_y) {
 			if (raster_bytes >= r_bytes) { 
@@ -75,10 +72,9 @@ output_to_printer(PIPEOUT_HANDLE handle, char * raster_p, int raster_bytes, int 
 			*outraster = 1;
 		}
 	} else {
-		debug_msg("Filter_PRINTER (end of raster pipeline) FLUSHING HERE ...\n");
-		debug_msg("%s:%d \t\t<<%s>>: raster = %p, raster_p = %p \n", __FILE__, __LINE__, __FUNCTION__, raster, raster_p);
+		debuglog(("PRINTER (end of raster pipeline) FLUSHING HERE ..."));
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out \n", __FILE__, __LINE__, __FUNCTION__);
+
 	return error;
 }
 
@@ -123,13 +119,12 @@ output_to_fetchpool(PIPEOUT_HANDLE handle, char * raster_p, int raster_bytes, in
 static int
 pipeline_init_all(EpsRasterPipeline * pipeline, PIPEOUT_FUNC output, PIPEOUT_HANDLE output_h)
 {
-
 	int error = 0;
 	int i;
 	EpsRasterPipe * p;
-	debug_msg("%s:%d \t\t<<%s>>: Trace in\n", __FILE__, __LINE__, __FUNCTION__);
-	debug_msg(" number pipe : %d \n", pipeline->numpipe);
-	debug_msg(" pipeline output = %#x, output_h = %#x \n", output, output_h);
+
+	debuglog((" number pipe : %d", pipeline->numpipe));
+	debuglog((" pipeline output = %#x, output_h = %#x", output, output_h));
 
 	for (i = 0; i < pipeline->numpipe; i++) {
 		p = pipeline->pipeline[i];
@@ -152,8 +147,8 @@ pipeline_init_all(EpsRasterPipeline * pipeline, PIPEOUT_FUNC output, PIPEOUT_HAN
 				p->output_h = output_h;
 			}
 
-			debug_msg(" p->output = %#x, p->output_h = %#x \n", p->output, p->output_h);
-			debug_msg(" pipe %d init = %s \n", i + 1, (error) ? "failed" : "succeed");
+			debuglog((" p->output = %#x, p->output_h = %#x", p->output, p->output_h));
+			debuglog((" pipe %d init = %s", i + 1, (error) ? "failed" : "succeed"));
 		}
 	}
 
@@ -163,43 +158,35 @@ pipeline_init_all(EpsRasterPipeline * pipeline, PIPEOUT_FUNC output, PIPEOUT_HAN
 int
 eps_raster_init (RASTER * handle, EpsRasterOpt * data, EpsRasterPipeline * pipeline)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in\n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRaster * p = NULL;
 	PIPEOUT_FUNC pipeout_func = NULL;
 	int error = 1;
 
 	do {
 		if (data == NULL) {
-			debug_msg("%s:%d \t\t<<%s>>: step 1\n", __FILE__, __LINE__, __FUNCTION__);
 			break;
 		}
 
 		if (pipeline == NULL) {
-			debug_msg("%s:%d \t\t<<%s>>: step 2\n", __FILE__, __LINE__, __FUNCTION__);
 			break;
 		}
 
 		p = (EpsRaster *) eps_malloc(sizeof(EpsRaster));
 		if (p == NULL) {
-			debug_msg("%s:%d \t\t<<%s>>: step 3\n", __FILE__, __LINE__, __FUNCTION__);
 			break;
 		} 
 		
-		debug_msg("%s:%d \t\t<<%s>>: step 4\n", __FILE__, __LINE__, __FUNCTION__);
 		p->drv_handle = data->drv_handle;
 		p->output = data->raster_output;
 		p->pipeline = pipeline;
 
 		if (p->pipeline->process_mode == EPS_RASTER_PROCESS_MODE_FETCHING) {
-			debug_msg("%s:%d \t\t<<%s>>: FETCHING MODE\n", __FILE__, __LINE__, __FUNCTION__);
 			pipeout_func = output_to_fetchpool;
-			debug_msg("%s:%d \t\t<<%s>>: start fetchpool_create_instance() \n", __FILE__, __LINE__, __FUNCTION__);
 			p->fetchpool = fetchpool_create_instance(pipeline->page.prt_print_area_y);
 			if (p->fetchpool == NULL) {
 				break;
 			}
 		} else { /* PRINTING */
-			debug_msg("%s:%d \t\t<<%s>>: PRINTING MODE\n", __FILE__, __LINE__, __FUNCTION__);
 			pipeout_func = output_to_printer;
 			p->fetchpool = NULL;
 		}
@@ -226,7 +213,6 @@ eps_raster_init (RASTER * handle, EpsRasterOpt * data, EpsRasterPipeline * pipel
 
 	} while (0);
 
-	debug_msg("%s:%d \t\t<<%s>>: Trace out\n", __FILE__, __LINE__, __FUNCTION__);
 	return error;
 }
 
@@ -329,7 +315,6 @@ eps_raster_fetch (RASTER handle, char * fetch_p, int fetch_bytes, int fetch_pixe
 
 int eps_raster_free (RASTER handle)
 {
-	debuglog(("TRACE IN eps_raster_free/raster.c"));
 	EpsRaster * raster = (EpsRaster *) handle;
 	EpsRasterPipe * p = NULL;
 	EpsRasterPipeline * pipeline = NULL;
@@ -337,41 +322,31 @@ int eps_raster_free (RASTER handle)
 	int i;
 
 	if (raster) {
-	debuglog (("IN: if (raster)"));
 		pipeline = raster->pipeline;
 		if (pipeline) {
-		debuglog (("IN: if (pipeline)"));
 			for (i = 0; i < pipeline->numpipe; i++) {
 				p = pipeline->pipeline[i];
 				if (p && p->obj) {
-				debuglog (("IN: if (p && p -> obj)"));
 					p->pipe_free(p->obj);
-					debuglog (("p->pipe_free(p->obj)"));	
 					eps_free(p);
-				debuglog (("OUT: if (p && p -> obj)"));
 				}
 			}
-		debuglog (("OUT: if (pipeline)"));
 		}
-	debuglog (("OUT: if (raster)"));
+
 		if (raster->input_raster) {
-	debuglog (("IN: if (raster->input_raster)"));
 			eps_free(raster->input_raster);
 		}
-	debuglog (("OUT: if (raster->input_raster)"));
+
 		if (raster->output_raster) {
-	debuglog (("IN: if (raster->output_raster)"));
 			eps_free(raster->output_raster);
 		}
-	debuglog (("OUT: if (raster->output_raster)"));
 
 		if (raster->fetchpool) {
-	debuglog (("IN: if (raster->fetchpool)"));
 			fetchpool_destroy_instance(raster->fetchpool);
 		}
-	debuglog (("OUT: if (raster->fetchpool)"));
+
 		eps_free(raster);
 	}
-	debuglog(("TRACE OUT eps_raster_free/raster.c"));
+
 	return error;
 }

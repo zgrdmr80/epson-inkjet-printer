@@ -81,6 +81,7 @@ static void sig_set(void)
 int
 main (int argc, char *argv[])
 {
+
 	int fd;
 	int result;
 	char *ppd_path;     
@@ -90,7 +91,7 @@ main (int argc, char *argv[])
 	sig_set();
 
 	result = 1; /* error */
-	debug_msg("%s:%d \t\t<<%s>>: start\n", __FILE__, __LINE__, __FUNCTION__);
+
 	do {
 		if (argc < 6 || argc > 7) {
 			fprintf (stderr, "Insufficient options.");
@@ -122,7 +123,7 @@ main (int argc, char *argv[])
 			fprintf (stderr, "Can't open PPD file.");
 			break;
 		}
-		debug_msg("%s:%d \t\t<<%s>>: do printJob()\n", __FILE__, __LINE__, __FUNCTION__);
+
 		if (printJob () != 0) {
 			break;
 		}

@@ -140,7 +140,6 @@ datalist_fetch(EpsFetchDataList *list, int id)
 FETCHPOOL
 fetchpool_create_instance(int data_count)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
 	EpsFetchDataPool *pool = (EpsFetchDataPool *) eps_malloc(sizeof(EpsFetchDataPool));
 	if (pool) {
 		pool->required_count = data_count;
@@ -149,7 +148,7 @@ fetchpool_create_instance(int data_count)
 		pool->serial_number = 0;
 		pool->list = NULL;
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out \n", __FILE__, __LINE__, __FUNCTION__);
+
 	return (FETCHPOOL) pool;
 }
 

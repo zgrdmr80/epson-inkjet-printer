@@ -76,12 +76,6 @@ static int page_no = 0;
 static int pageHeight = 0;
 #endif
 
-int CustomSize = 0;
-int ReduceEnlag = 0;
-int OutputPaperSize = 0;
-int ReduceEnlagPer = 0;
-int checkReduceEnlagPer = 0;
-
 int rasterSource(char *buf, int bufSize)
 {
 	int readBytes = 0;
@@ -253,14 +247,12 @@ static int load_core_library (HANDLE * handle)
 
 static int setup_option (void)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);	 
+	debuglog(("TRACE IN"));
 
 	EPS_INT32 optionCount = 0;
 	EPS_INT8** optionList = NULL;
 	char * option = NULL;
 	char * choice = NULL;
-	char choicetmp[20];
-	
 
 	ppd_attr_t * attr = NULL;
 	int isFirst = 0;
@@ -269,7 +261,7 @@ static int setup_option (void)
 	int i;
 
 	char resource [PATH_MAX];
-	
+
 	do {
 		isFirst = 1;
 		while (attr = get_ppd_attr ("epcgResourceData", isFirst)) {
@@ -303,8 +295,7 @@ static int setup_option (void)
 			break;
 		}
 
-		debug_msg("%s:%d \t\t<<%s>>:\t\t Job Options =%s\n", __FILE__, __LINE__, __FUNCTION__, JobOptions);	 
-		
+		debuglog(("Job Options =%s", JobOptions));
 
 		for (i = 0; i < optionCount; i++) {
 			option = optionList[i];
@@ -316,27 +307,9 @@ static int setup_option (void)
 					break;
 				}
 			}
-			debug_msg("%s:%d \t\t<<%s>>:\t\t Option=%s Choice=%s\n", __FILE__, __LINE__, __FUNCTION__, option, choice);
 
-			if(strcmp(option, "PageSize") == 0 && strcmp(choice, "Custom.595.28x841.89") == 0){
-				CustomSize = 1;
-			}
-
-			if(strcmp(option, "ReduceEnlarge") == 0 && strcmp(choice, "ByOutputPaperSize") == 0){
-				ReduceEnlag = 1;
-			}
-
-			if(strcmp(option, "ReduceEnlarge") == 0 && strcmp(choice, "ByPercentage") == 0 && CustomSize == 1){
-				ReduceEnlagPer = 1;
-			}
-
-			if(ReduceEnlagPer == 1 && checkReduceEnlagPer == 0){
-				strcpy(choicetmp, "ByOutputPaperSize");
-				error = epcgSetPrintOption(option, choicetmp);
-				checkReduceEnlagPer = 1;
-			}else{
-				error = epcgSetPrintOption(option, choice);
-			}
+			debuglog(("Option=%s Choice=%s", option, choice));
+			error = epcgSetPrintOption(option, choice);
 			if (error) {
 				break;
 			}
@@ -352,7 +325,7 @@ static int setup_option (void)
 		eps_free (optionList);
 	}
 
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace out\n", __FILE__, __LINE__, __FUNCTION__);	 
+	debuglog(("TRACE OUT=%d", error));
 
 	return error;
 }
@@ -374,7 +347,7 @@ static int unload_core_library (HANDLE * handle)
 
 static int print_page (void)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);
+	debuglog(("TRACE IN"));
 
 	cups_page_header_t header;
 
@@ -401,20 +374,12 @@ static int print_page (void)
 	rasteropt.drv_handle = NULL;
 	rasteropt.raster_output = pipeOut;
 
-	debug_msg("%s:%d \t\t<<%s>>:\t\t setup_filter_option\n", __FILE__, __LINE__, __FUNCTION__);
+
 	error = setup_filter_option (&filterPrintOption);
 	if(error) {
 		error = 1;
 		return error;
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Start while cupsRasterReadHeader()\n", __FILE__, __LINE__, __FUNCTION__);
-
-	int  page_count = 1;
-	char ppmFileName[30];
-	int check = 0;
-	char choice_tmp[12];
-	char option[10];
-	int pageSize = 0;
 
 	while (JobCanceled == 0 && error == 0 && cupsRasterReadHeader (Raster, &header)) {
 
@@ -425,278 +390,88 @@ static int print_page (void)
 		pageRegion.height = header.cupsHeight;
 		pageRegion.bytesPerLine = header.cupsBytesPerLine;
 		pageRegion.bitsPerPixel = header.cupsBitsPerPixel;
-
-
-		debug_msg("header.cupsWidth = %d\n", header.cupsWidth);
-		debug_msg("header.cupsHeight = %d\n", header.cupsHeight);
-		if(CustomSize == 1 && header.cupsBitsPerPixel == 8){
-			if(check == 0){
-				if(header.cupsWidth == 1356 && header.cupsHeight == 2076){
-					strcpy(choice_tmp, "4x6in");
-					strcpy(option, "PageSize");
-					pageSize = 1;  /*4x6in*/
-				}
-				if(header.cupsWidth == 1716 && header.cupsHeight == 2438){
-					strcpy(choice_tmp, "5x7in");
-					strcpy(option, "PageSize");
-					pageSize = 2;  /*5x7in*/
-				}
-				if(header.cupsWidth == 1177 && header.cupsHeight == 1716){
-					strcpy(choice_tmp, "3.5x5in");
-					strcpy(option, "PageSize");
-					pageSize = 3;  /*3.5x5in*/
-				}
-				if(header.cupsWidth == 1716 && header.cupsHeight == 2796){
-					strcpy(choice_tmp, "5x8in");
-					strcpy(option, "PageSize");
-					pageSize = 4;  /*5x8in*/
-				}
-				if(header.cupsWidth == 2796 && header.cupsHeight == 3516){
-					strcpy(choice_tmp, "8x10in");
-					strcpy(option, "PageSize");
-					pageSize = 5;  /*8x10in*/
-				}
-				if(header.cupsWidth == 1356 && header.cupsHeight == 2475){
-					strcpy(choice_tmp, "169widesize");
-					strcpy(option, "PageSize");
-					pageSize = 6;  /*169widesize*/
-				}
-				if(header.cupsWidth == 1404 && header.cupsHeight == 2013){
-					strcpy(choice_tmp, "100x148mm");
-					strcpy(option, "PageSize");
-					pageSize = 7;  /*100x148mm*/
-				}
-				if(header.cupsWidth == 1160 && header.cupsHeight == 3336){
-					strcpy(choice_tmp, "ENVELOPE_10");
-					strcpy(option, "PageSize");
-					pageSize = 8;  /*ENVELOPE_10*/
-				}
-				if(header.cupsWidth == 1234 && header.cupsHeight == 3034){
-					strcpy(choice_tmp, "ENVELOPEDL");
-					strcpy(option, "PageSize");
-					pageSize = 9;  /*ENVELOPEDL*/
-				}
-				if(header.cupsWidth == 1290 && header.cupsHeight == 2212){
-					strcpy(choice_tmp, "ENVELOPEC6");
-					strcpy(option, "PageSize");
-					pageSize = 10;  /*ENVELOPEC6*/
-				}
-				if(header.cupsWidth == 4579 && header.cupsHeight == 6761){
-					strcpy(choice_tmp, "A3+");
-					strcpy(option, "PageSize");
-					pageSize = 11;  /*A3+*/
-				}
-				if(pageSize != 0)
-					epcgSetPrintOption(option, choice_tmp);
-				check = 1;
-			}
-		}
-		//PPM header file
-		/*
-		sprintf(ppmFileName, "/tmp/test%d.ppm", page_count);
-		{
-			FILE *fp;
-			fp=fopen(ppmFileName, "w");
-			fprintf(fp, "P3\n");
-			fprintf(fp, "%d\n",header.cupsBytesPerLine/3);
-			fprintf(fp, "%d\n",header.cupsHeight);
-			fprintf(fp, "255\n");
-			fclose(fp);
-		} */
-
-		page_count++;
-
-		debug_msg("%s:%d \t\t<<%s>>:\t\t Create PageManager: \n", __FILE__, __LINE__, __FUNCTION__);
 		pageManager = pageManagerCreate(pageRegion, filterPrintOption, rasterSource);
-
-		debug_msg("%s:%d \t\t<<%s>>:\t\t PageRegion: \n", __FILE__, __LINE__, __FUNCTION__);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t width = %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.width);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t height = %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.height);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t bytesPerLine = %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.bytesPerLine);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t bitsPerPixel = %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.bitsPerPixel);
 		if (pageManager == NULL) {
 			error = 1;
 			break;
 		}
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t pageRegion.width =  %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.bytesPerLine, pageRegion.width);
 		pageManagerGetPageRegion(pageManager, &pageRegion);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t pageRegion.width =  %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.bytesPerLine, pageRegion.width);
 		
 		image_raw = (char * ) eps_malloc(pageRegion.bytesPerLine);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t imageraw_size =  %d: \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.bytesPerLine);
 		if (image_raw == NULL) {
 			error = 1;
 			break;
 		}
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t start getPageAttribute\n", __FILE__, __LINE__, __FUNCTION__);
+
 		epcgGetPageAttribute (EPS_PAGEATTRIB_PRINTABLEAREA_WIDTH, &printableWidth);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t printableWidth =  %d: \n", __FILE__, __LINE__, __FUNCTION__, printableWidth);
 		epcgGetPageAttribute (EPS_PAGEATTRIB_PRINTABLEAREA_HEIGHT, &printableHeight);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t printableHeight =  %d: \n", __FILE__, __LINE__, __FUNCTION__, printableHeight);
-
-		if(CustomSize == 1 && header.cupsBitsPerPixel == 8 && ReduceEnlag == 0 && ReduceEnlagPer == 0){
-			if(pageSize == 1){
-				printableWidth = 1356;
-				printableHeight = 2076;
-			}
-			if(pageSize == 2){
-				printableWidth = 1716;
-				printableHeight = 2438;
-			}
-			if(pageSize == 3){
-				printableWidth = 1177;
-				printableHeight = 1176;
-			}
-			if(pageSize == 4){
-				printableWidth = 1716;
-				printableHeight = 2796;
-			}
-			if(pageSize == 5){
-				printableWidth = 2796;
-				printableHeight = 3516;
-			}
-			if(pageSize == 6){
-				printableWidth = 1356;
-				printableHeight = 2476;
-			}
-			if(pageSize == 7){
-				printableWidth = 1333;
-				printableHeight = 2014;
-			}
-			if(pageSize == 8){
-				printableWidth = 1401;
-				printableHeight = 3095;
-			}
-			if(pageSize == 9){
-				printableWidth = 1475;
-				printableHeight = 2793;
-			}
-			if(pageSize == 10){
-				printableWidth = 1532;
-				printableHeight = 1971;
-			}
-			if(pageSize == 11){
-				printableWidth = 4663;
-				printableHeight = 6846;
-			}
-			
-		}
-
-		if(CustomSize == 1 && (ReduceEnlag == 1 || ReduceEnlagPer == 1)){
-			printableWidth = 1356;
-			printableHeight = 2076;
-		}
-
 		epcgGetPageAttribute (EPS_PAGEATTRIB_FLIP_VERTICAL, &flipVertical);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t flipVertical =  %d: \n", __FILE__, __LINE__, __FUNCTION__, flipVertical);
 		epcgGetPageAttribute (EPS_PAGEATTRIB_FLIP_HORIZONTAL, &flipHorizontal);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t flipHorizontal =  %d: \n", __FILE__, __LINE__, __FUNCTION__, flipHorizontal);
-		
+
 		page.bytes_per_pixel = pageRegion.bitsPerPixel / 8;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t bytes_per_pixel =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.bytes_per_pixel);
 		page.src_print_area_x = pageRegion.width;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.src_print_area_x =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.src_print_area_x);
 		page.src_print_area_y = pageRegion.height; 
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.src_print_area_y =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.src_print_area_y);
 
-	
-		page.prt_print_area_x = printableWidth;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.prt_print_area_x =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.prt_print_area_x);
-		page.prt_print_area_y = printableHeight;
+		{
+			page.prt_print_area_x = printableWidth;
+			page.prt_print_area_y = printableHeight;
+			page.reverse = (flipVertical) ? 1 : 0;
+			page.mirror = (flipHorizontal) ? 1 : 0;
+			page.scale = ((page.src_print_area_x != page.prt_print_area_x) || (page.src_print_area_y != page.prt_print_area_y)) ? 1 : 0;
+		}
 
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.prt_print_area_y =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.prt_print_area_y);
-		page.reverse = (flipVertical) ? 1 : 0;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.reverse =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.reverse);
-		page.mirror = (flipHorizontal) ? 1 : 0;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.mirror =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.mirror);
-		page.scale = ((page.src_print_area_x != page.prt_print_area_x) || (page.src_print_area_y != page.prt_print_area_y)) ? 1 : 0;
-		debug_msg("page.scale = %d", page.scale);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t page.scale =  %d: \n", __FILE__, __LINE__, __FUNCTION__, page.scale);
 		do {
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t raster_helper_create_pipeline() \n", __FILE__, __LINE__, __FUNCTION__);
-			pipeline = (EpsRasterPipeline *) raster_helper_create_pipeline(&page, EPS_RASTER_PROCESS_MODE_PRINTING);	
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t eps_raster_init() \n", __FILE__, __LINE__, __FUNCTION__);
+			pipeline = (EpsRasterPipeline *) raster_helper_create_pipeline(&page, EPS_RASTER_PROCESS_MODE_PRINTING);
 			if (eps_raster_init(&raster_h, &rasteropt, pipeline)) {
 				error = 1;
 				break;
 			}
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t epcgStartPage() \n", __FILE__, __LINE__, __FUNCTION__);
+
 			if (epcgStartPage()) {
-				debug_msg("%s:%d \t\t<<%s>>:\t\t\t abort -> endPage() \n", __FILE__, __LINE__, __FUNCTION__);
 				epcgEndPage(TRUE);  /* Abort */
 				error = 1;
 				break;
 			}
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t start getPageRegion raw() \n", __FILE__, __LINE__, __FUNCTION__);
+
 			for (i = 0; i < pageRegion.height; i++) {
-				debug_msg("%s:%d \t\t<<%s>>:\t\t\t getraster line[%d]() \n", __FILE__, __LINE__, __FUNCTION__, i);
 				if ((pageManagerGetRaster(pageManager, image_raw, pageRegion.bytesPerLine) != EPS_OK) || (JobCanceled)) {
-					debug_msg("%s:%d \t\t<<%s>>:\t\t\t getraster fail[%d]() \n", __FILE__, __LINE__, __FUNCTION__, i);
 					error = 1;
 					break;
 				}
-				///Add for print PPM file
-				/*
-				{
-					FILE *fp;
-					fp=fopen(ppmFileName, "a+");
-					int j=0;	
-					for(j=0; j<pageRegion.bytesPerLine; j++){		
-						fprintf(fp, "%u ", (unsigned char)image_raw[j]);
-					}
-					fprintf(fp, "\n");
-					fclose(fp);
-				} */
-						
-				debug_msg("%s:%d \t\t<<%s>>:\t\t\t eps_raster_print() \n", __FILE__, __LINE__, __FUNCTION__, i);
+
 				if (eps_raster_print(raster_h, image_raw, pageRegion.bytesPerLine, pageRegion.width, (int *)&nraster)) {
-					debug_msg("%s:%d \t\t<<%s>>:\t\t\t print raster fail[%d]() \n", __FILE__, __LINE__, __FUNCTION__, i);
 					error  = 1;
 					break;
 				}
 			}
 
 			// flushing page
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t flusing line[%d]() \n", __FILE__, __LINE__, __FUNCTION__, i);
 			eps_raster_print(raster_h, NULL, 0, 0, (int *)&nraster);
 
 			bAbort = (error) ? TRUE : FALSE;
 			if (epcgEndPage (bAbort)) {
-				debuglog(("bAbort"));
 				error = 1;
 			}
 
-#if (0)
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t page_no = %d, pageHeight = %d", __FILE__, __LINE__, __FUNCTION__, ++page_no, pageHeight);
+#if DEBUG
+			debuglog(("page_no = %d, pageHeight = %d", ++page_no, pageHeight));
+			pageHeight = 0;
 #endif
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t Safe free raster_h\n", __FILE__, __LINE__, __FUNCTION__);
+
 			safeFree(raster_h, eps_raster_free);
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t Safe free pipeline\n", __FILE__, __LINE__, __FUNCTION__);
 			safeFree(pipeline, raster_helper_destroy_pipeline);
-			debug_msg("%s:%d \t\t<<%s>>:\t\t\t end one while raster read\n", __FILE__, __LINE__, __FUNCTION__);
-		if (i == 1715) 
-			{
-				debug_msg("%s:%d \t\t<<%s>>:\t\t\t break\n", __FILE__, __LINE__, __FUNCTION__);
-				break;
-			}
+
 		} while (error == 0 && pageManagerIsNextPage(pageManager) == TRUE);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t end while\n", __FILE__, __LINE__, __FUNCTION__);
+
 		safeFree(image_raw, eps_free);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free raster_h\n", __FILE__, __LINE__, __FUNCTION__);
 		safeFree(raster_h, eps_raster_free);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free pipeline\n", __FILE__, __LINE__, __FUNCTION__);
 		safeFree(pipeline, raster_helper_destroy_pipeline);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free pageManage\n", __FILE__, __LINE__, __FUNCTION__);
 		safeFree(pageManager, pageManagerDestroy);
-		debug_msg(("Apptemp end while raster read\n"));
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free image_raw\n", __FILE__, __LINE__, __FUNCTION__);
+
 	safeFree(image_raw, eps_free);
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free raster_h\n", __FILE__, __LINE__, __FUNCTION__);
 	safeFree(raster_h, eps_raster_free);
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free pipeline\n", __FILE__, __LINE__, __FUNCTION__);
 	safeFree(pipeline, raster_helper_destroy_pipeline);
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t safe free pageManager\n", __FILE__, __LINE__, __FUNCTION__);
 	safeFree(pageManager, pageManagerDestroy);
 
 	debuglog(("TRACE OUT=%d", error));
@@ -706,28 +481,25 @@ static int print_page (void)
 
 int printJob (void)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);
+	debuglog(("TRACE IN"));
 
 	HANDLE lib_handle = NULL;
 	EPS_BOOL jobStarted = FALSE;
 	int error = 1; 
 
 	do {
-		debug_msg("%s:%d \t\t<<%s>>:\t\t load core library\n", __FILE__, __LINE__, __FUNCTION__);
 		error = load_core_library (&lib_handle);
 		if(error) {
 			break;
 		}
-		debug_msg("%s:%d \t\t<<%s>>:\t\t setup option\n", __FILE__, __LINE__, __FUNCTION__);
+
 		error = setup_option ();
 		if(error) {
 			break;
 		}
 
-		debug_msg("%s:%d \t\t<<%s>>:\t\t Job name = %s\n", __FILE__, __LINE__, __FUNCTION__, JobName);
+		debuglog(("Job name : %s", JobName));
 
-		
-		debug_msg("%s:%d \t\t<<%s>>:\t\t epcgStartJob()\n", __FILE__, __LINE__, __FUNCTION__);
 		error = epcgStartJob((EPS_PrintStream) printStream, JobName);
 		if(error) {
 			break;
@@ -735,28 +507,24 @@ int printJob (void)
 
 		jobStarted = TRUE;
 
-		debug_msg("%s:%d \t\t<<%s>>:\t\t print_page()\n", __FILE__, __LINE__, __FUNCTION__);
 		error = print_page ();
 		if(error) {
-			debuglog(("break after endpage"));
 			break;
 		}
 
 		error = 0;
 
 	} while (0);
+
 	if (jobStarted == TRUE) {
-		debug_msg("%s:%d \t\t<<%s>>:\t\t call end job\n", __FILE__, __LINE__, __FUNCTION__);
 		epcgEndJob();
-		debug_msg("%s:%d \t\t<<%s>>:\t\t end job called\n", __FILE__, __LINE__, __FUNCTION__);
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Unload library\n", __FILE__, __LINE__, __FUNCTION__);
+
 	if (lib_handle) {
-		debug_msg("%s:%d \t\t<<%s>>:\t\t Unload core library\n", __FILE__, __LINE__, __FUNCTION__);
 		unload_core_library (lib_handle);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t Unload core library completed\n", __FILE__, __LINE__, __FUNCTION__);
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Traceout, err = %d\n", __FILE__, __LINE__, __FUNCTION__, error);
+
+	debuglog(("TRACE OUT=%d", error));
 
 	return error;
 }

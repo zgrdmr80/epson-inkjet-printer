@@ -45,31 +45,27 @@ static EpsRasterPipeline * pipeline_append_reverse(EpsRasterPipeline * pipeline)
 static EpsRasterPipeline * 
 pipeline_append_pipe(EpsRasterPipeline * pipeline, EpsRasterPipe * pipe)
 {
-	debug_msg("%s:%d \t\t<<%s>>: \t\t Trace in \n", __FILE__, __LINE__, __FUNCTION__);
+	
 	if (pipeline && pipe) {
-		debug_msg("%s:%d \t\t<<%s>>: \t\t step 1\n", __FILE__, __LINE__, __FUNCTION__);
 		EpsRasterPipe ** pline_new = NULL;
 		pline_new = (EpsRasterPipe **) eps_malloc(sizeof(EpsRasterPipe *) * (pipeline->numpipe + 1));
 		if (pline_new) {
-			debug_msg("%s:%d \t\t<<%s>>: \t\t step 2 \n", __FILE__, __LINE__, __FUNCTION__);
 			if (pipeline->numpipe > 0) {
-				debug_msg("%s:%d \t\t<<%s>>: \t\t step 3 \n", __FILE__, __LINE__, __FUNCTION__);
 				int i;
 				for(i = 0; i < pipeline->numpipe; i++) {
-					debug_msg("%s:%d \t\t<<%s>>: \t\t for numpipe = %d\n", __FILE__, __LINE__, __FUNCTION__, i);
 					pline_new[i] = pipeline->pipeline[i];
 				}
-				debug_msg("%s:%d \t\t<<%s>>: \t\t step 4\n", __FILE__, __LINE__, __FUNCTION__);
+
 				eps_free(pipeline->pipeline);
 			}
-			debug_msg("%s:%d \t\t<<%s>>: \t\t step 5 \n", __FILE__, __LINE__, __FUNCTION__);
+
 			pline_new[pipeline->numpipe] = pipe;
 			pipeline->pipeline = pline_new;
 			pipeline->numpipe++;
 
 		}
 	}
- 	debug_msg("%s:%d \t\t<<%s>>: \t\t Trace out \n", __FILE__, __LINE__, __FUNCTION__);
+
 	return pipeline;
 }
 
@@ -77,21 +73,20 @@ pipeline_append_pipe(EpsRasterPipeline * pipeline, EpsRasterPipe * pipe)
 EpsRasterPipeline *
 raster_helper_create_pipeline (EpsPageInfo * page, EpsRasterProcessMode process_mode)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in\n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRasterPipeline * pipeline = NULL;
 
 	pipeline = (EpsRasterPipeline *)eps_malloc(sizeof(EpsRasterPipeline));
 	if (pipeline) {
-		debug_msg("%s:%d \t\t<<%s>>: Pipeline Processing Mode : %s\n", __FILE__, __LINE__, __FUNCTION__, (process_mode == EPS_RASTER_PROCESS_MODE_PRINTING) ? "PRINTING" : "FETCHING");
-		debug_msg("%s:%d \t\t<<%s>>: bytes_per_pixel : %d\n", __FILE__, __LINE__, __FUNCTION__,page->bytes_per_pixel);
-		debug_msg("%s:%d \t\t<<%s>>: src_print_area_x : %d\n", __FILE__, __LINE__, __FUNCTION__,page->src_print_area_x);
-		debug_msg("%s:%d \t\t<<%s>>: src_print_area_y : %d\n", __FILE__, __LINE__, __FUNCTION__,page->src_print_area_y);
-		debug_msg("%s:%d \t\t<<%s>>: prt_print_area_x : %d\n", __FILE__, __LINE__, __FUNCTION__,page->prt_print_area_x);
-		debug_msg("%s:%d \t\t<<%s>>: prt_print_area_y : %d\n", __FILE__, __LINE__, __FUNCTION__,page->prt_print_area_y);
-		debug_msg("%s:%d \t\t<<%s>>: scale : %d\n", __FILE__, __LINE__, __FUNCTION__,page->scale);
-		debug_msg("%s:%d \t\t<<%s>>: mirror : %d\n", __FILE__, __LINE__, __FUNCTION__,page->mirror);
-		debug_msg("%s:%d \t\t<<%s>>: reverse : %d\n", __FILE__, __LINE__, __FUNCTION__,page->reverse);
-		debug_msg("%s:%d \t\t<<%s>>: watermark.use : %d\n", __FILE__, __LINE__, __FUNCTION__,page->watermark.use);
+		debuglog(("Pipeline Processing Mode : %s", (process_mode == EPS_RASTER_PROCESS_MODE_PRINTING) ? "PRINTING" : "FETCHING"));
+		debuglog(("bytes_per_pixel : %d", page->bytes_per_pixel));
+		debuglog(("src_print_area_x : %d", page->src_print_area_x));
+		debuglog(("src_print_area_y : %d", page->src_print_area_y));
+		debuglog(("prt_print_area_x : %d", page->prt_print_area_x));
+		debuglog(("prt_print_area_y : %d", page->prt_print_area_y));
+		debuglog(("scale : %d", page->scale));
+		debuglog(("mirror : %d", page->mirror));
+		debuglog(("reverse : %d", page->reverse));
+		debuglog(("watermark.use : %d", page->watermark.use));
 
 		memcpy(&pipeline->page, page, sizeof(EpsPageInfo));
 
@@ -102,30 +97,30 @@ raster_helper_create_pipeline (EpsPageInfo * page, EpsRasterProcessMode process_
 		
 		// Scale
 		if (page->scale) {
-			debug_msg("Pipeline Scale on\n");
+			debuglog(("Pipeline Scale on"));
 			pipeline = pipeline_append_scale(pipeline);
 		}
 
 		// Watermark
 		if (page->watermark.use == 1) {
-			debug_msg("Pipeline Watermark on\n");
+			debuglog(("Pipeline Watermark on"));
 			pipeline = pipeline_append_watermark(pipeline);
 		}
 		
 		// Mirror 
 		if (page->mirror) {
-			debug_msg("Pipeline Mirror on\n");
+			debuglog(("Pipeline Mirror on"));
 			pipeline = pipeline_append_mirror(pipeline);
 		}
 
 		// Reverse
 		if (page->reverse) {
-			debug_msg("Pipeline Reverse on\n");
+			debuglog(("Pipeline Reverse on"));
 			pipeline = pipeline_append_reverse(pipeline);
 			pipeline->mode.duplecate = 0;
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out\n", __FILE__, __LINE__, __FUNCTION__);
+
 	return pipeline;
 }
 
@@ -155,10 +150,8 @@ raster_helper_destroy_pipeline (EpsRasterPipeline * pipeline)
 static EpsRasterPipeline * 
 pipeline_append_scale(EpsRasterPipeline * pipeline)
 {
-	debug_msg("%s:%d \t\t<<%s>>: start AppendScale()\n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRasterPipe * pipe = (EpsRasterPipe *) eps_malloc(sizeof(EpsRasterPipe));
 	if (pipe) {
-		debug_msg("%s:%d \t\t<<%s>>: init scaleOpt()\n", __FILE__, __LINE__, __FUNCTION__);
 		EpsScaleOpt * init_p = (EpsScaleOpt *)eps_malloc(sizeof(EpsScaleOpt));
 		if (init_p) {
 			init_p->do_scaling = pipeline->page.scale;
@@ -168,27 +161,19 @@ pipeline_append_scale(EpsRasterPipeline * pipeline)
 			init_p->prt_print_area_x = pipeline->page.prt_print_area_x;
 			init_p->prt_print_area_y = pipeline->page.prt_print_area_y;
 			init_p->pipe = pipe;
-			debug_msg("%s:%d \t\t<<%s>>: \t\t do_scaling = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->do_scaling);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t bytes_per_pixel = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->bytes_per_pixel);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t src_print_area_x = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->src_print_area_x);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t src_print_area_x = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->src_print_area_y);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t prt_print_area_x = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->prt_print_area_x);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t prt_print_area_y = %d()\n", __FILE__, __LINE__, __FUNCTION__, init_p->prt_print_area_y);
-			debug_msg("%s:%d \t\t<<%s>>: \t\t pipe = %p()\n", __FILE__, __LINE__, __FUNCTION__, init_p->pipe);
 			PIPE_INIT(pipe, init_p, scale);
 		} else {
 			eps_free(pipe);
 			pipe = NULL;
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: \t\t pipeline_append_pipe()\n", __FILE__, __LINE__, __FUNCTION__);
+
 	return pipeline_append_pipe(pipeline, pipe);
 }
 
 static EpsRasterPipeline * 
 pipeline_append_watermark(EpsRasterPipeline * pipeline)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in()\n", __FILE__, __LINE__, __FUNCTION__);
 	const float watermarkDensitys [] = {
 		0.95, /* Level 1 Light */
 		0.9,  /* Level 2 */
@@ -289,24 +274,23 @@ pipeline_append_watermark(EpsRasterPipeline * pipeline)
 			init_p->pipe = pipe;
 			PIPE_INIT(pipe, init_p, blend);
 
-			debug_msg("source_path : %s", init_p->source_path);
-			debug_msg("source_type : %d", init_p->source_type);
-			debug_msg("frame (%d, %d, %d, %d)", init_p->frame.origin.x, init_p->frame.origin.y, init_p->frame.size.width, init_p->frame.size.height);
-			debug_msg("bounds (%d, %d, %d, %d)", init_p->bounds.origin.x, init_p->bounds.origin.y, init_p->bounds.size.width, init_p->bounds.size.height);
-			debug_msg("color (%d, %d, %d, %d)", init_p->color.red, init_p->color.green, init_p->color.blue, init_p->color.alpha);
+			debuglog(("source_path : %s", init_p->source_path));
+			debuglog(("source_type : %d", init_p->source_type));
+			debuglog(("frame (%d, %d, %d, %d)", init_p->frame.origin.x, init_p->frame.origin.y, init_p->frame.size.width, init_p->frame.size.height));
+			debuglog(("bounds (%d, %d, %d, %d)", init_p->bounds.origin.x, init_p->bounds.origin.y, init_p->bounds.size.width, init_p->bounds.size.height));
+			debuglog(("color (%d, %d, %d, %d)", init_p->color.red, init_p->color.green, init_p->color.blue, init_p->color.alpha));
 		} else {
 			eps_free(pipe);
 			pipe = NULL;
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace_out()\n", __FILE__, __LINE__, __FUNCTION__);
+
 	return pipeline_append_pipe(pipeline, pipe);
 }
 
 static EpsRasterPipeline *
 pipeline_append_mirror(EpsRasterPipeline * pipeline)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in\n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRasterPipe * pipe = (EpsRasterPipe *) eps_malloc(sizeof(EpsRasterPipe));
 	if (pipe) {
 		EpsMirrorOpt * init_p = (EpsMirrorOpt *)eps_malloc(sizeof(EpsMirrorOpt));
@@ -319,14 +303,12 @@ pipeline_append_mirror(EpsRasterPipeline * pipeline)
 			pipe = NULL;
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out()\n", __FILE__, __LINE__, __FUNCTION__);
 	return pipeline_append_pipe(pipeline, pipe);
 }
 
 static EpsRasterPipeline * 
 pipeline_append_reverse(EpsRasterPipeline * pipeline)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in()\n", __FILE__, __LINE__, __FUNCTION__);
 	EpsRasterPipe * pipe= (EpsRasterPipe *) eps_malloc(sizeof(EpsRasterPipe));
 	if (pipe) {
 		EpsReverseOpt * init_p = (EpsReverseOpt *)eps_malloc(sizeof(EpsReverseOpt));
@@ -338,15 +320,14 @@ pipeline_append_reverse(EpsRasterPipeline * pipeline)
 			init_p->pipe = pipe;
 			PIPE_INIT(pipe, init_p, reverse);
 
-			debug_msg("top_margin (%d)", init_p->top_margin);
-			debug_msg("num_raster (%d)", init_p->num_raster);
+			debuglog(("top_margin (%d)", init_p->top_margin));
+			debuglog(("num_raster (%d)", init_p->num_raster));
 
 		} else {
 			eps_free(pipe);
 			pipe = NULL;
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out()\n", __FILE__, __LINE__, __FUNCTION__);
 	return pipeline_append_pipe(pipeline, pipe);
 }
 

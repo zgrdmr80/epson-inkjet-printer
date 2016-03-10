@@ -25,7 +25,6 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#define DEBUG (0)
 
 #if DEBUG
 #include <stdio.h>

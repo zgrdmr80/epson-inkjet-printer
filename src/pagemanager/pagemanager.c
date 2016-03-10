@@ -19,7 +19,7 @@
 #include <config.h>
 #endif
 
-#include <string.h>
+#include <string.h> 
 
 #include "epcgdef.h"
 #include "debuglog.h"
@@ -84,7 +84,6 @@ fetchRaster(EpsPageManager *pageManager)
 
 EpsPageManager* pageManagerCreate(EpsPageRegion pageRegion, EpsFilterPrintOption filterPrintOption, EpsRasterSource rasterSource)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in: \n", __FILE__, __LINE__, __FUNCTION__);
 	EpsPageManager*		pageManager;
 	EpsSubPageManager	subPageManager;
 	PageManagerPrivateData  *privateData;	
@@ -102,7 +101,7 @@ EpsPageManager* pageManagerCreate(EpsPageRegion pageRegion, EpsFilterPrintOption
 		eps_free(pageManager);
 		return NULL;
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t PageManage Created \n", __FILE__, __LINE__, __FUNCTION__);
+	debuglog(("pageManager Created."));
 
 	pageManager->rasterSource		= rasterSource;
 	pageManager->pageRegion			= pageRegion;
@@ -137,8 +136,7 @@ EpsPageManager* pageManagerCreate(EpsPageRegion pageRegion, EpsFilterPrintOption
 		
 		page.prt_print_area_x = pageRegion.width;
 		page.prt_print_area_y = pageRegion.height;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t pr_print_area_x = %d  \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.width);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t pr_print_area_x = %d  \n", __FILE__, __LINE__, __FUNCTION__, pageRegion.height);
+		
 		page.mirror = filterPrintOption.mirrorImage;
 		if (filterPrintOption.rotate180) {
 			page.reverse = 1;
@@ -158,6 +156,7 @@ EpsPageManager* pageManagerCreate(EpsPageRegion pageRegion, EpsFilterPrintOption
 			page.watermark.color = filterPrintOption.watermarkColor;
 		}
 		privateData->pipeline = (EpsRasterPipeline *) raster_helper_create_pipeline(&page, EPS_RASTER_PROCESS_MODE_FETCHING);
+
 		if (eps_raster_init(&privateData->raster_h, &rasteropt, privateData->pipeline)) {
 			subPageManagerDestroy(pageManager->subPageManager);
 			eps_free(pageManager);
@@ -205,15 +204,14 @@ void pageManagerDestroy(EpsPageManager *pageManager)
 
 int pageManagerGetPageRegion(EpsPageManager *pageManager, EpsPageRegion *pageRegion)
 {
-	debug_msg("%s:%d \t\t<<%s>>:\t\t Trace in \n", __FILE__, __LINE__, __FUNCTION__);
 	if (pageManager == NULL) {
 		return EPS_ERROR;
 	}
 	
 	*pageRegion = pageManager->pageRegion;
-	debug_msg("\t\t\twidth = %d, Height =%d, bytesPerLine = %d, bitsPerPixel = %d \n", 
+	debuglog(("width = %d, Height =%d, bytesPerLine = %d, bitsPerPixel = %d", 
 				pageManager->pageRegion.width, pageManager->pageRegion.height,
-				pageManager->pageRegion.bytesPerLine, pageManager->pageRegion.bitsPerPixel);
+				pageManager->pageRegion.bytesPerLine, pageManager->pageRegion.bitsPerPixel));
 
 	return EPS_OK;
 }

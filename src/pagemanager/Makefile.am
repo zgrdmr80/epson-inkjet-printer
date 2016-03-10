@@ -7,8 +7,6 @@ INCLUDES = \
 	-I../filteropt \
 	-I../raster
 
-# AM_CFLAGS = -fsigned-char
-
 noinst_LTLIBRARIES = libpagemanager.la
 
 libpagemanager_la_LIBADD = \

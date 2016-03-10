@@ -30,17 +30,16 @@ EpsSubPageManager* subPageManagerCreate(EpsPageRegion *pageRegion, EpsPageLayout
 	int width, height;
 	int bytesPerPixel;
 	EpsSubPageManager *subPageManager;
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
 	
 	subPageManager = (EpsSubPageManager *)eps_malloc(sizeof(EpsSubPageManager));
 	if (subPageManager == NULL) {
 		return NULL;
 	}
-	debug_msg("%s:%d \t\t<<%s>>: subPageManager Created.\n", __FILE__, __LINE__, __FUNCTION__);
+	debuglog(("subPageManager Created."));
 
 	subPageManager->pageLayout = pageLayout;
 	bytesPerPixel = pageRegion->bitsPerPixel / 8;
-	debug_msg("%s:%d \t\t<<%s>>: Before: width = %d, height = %d, bytesPerLine = %d\n", __FILE__, __LINE__, __FUNCTION__, pageRegion->width, pageRegion->height, pageRegion->bytesPerLine);
+	debuglog(("Before: width = %d, height = %d, bytesPerLine = %d", pageRegion->width, pageRegion->height, pageRegion->bytesPerLine));
 	switch (subPageManager->pageLayout) {
 		case EPS_PAGE_LAYOUT_1x1:
 			subPageManager->vertical_num = 1;
@@ -86,7 +85,7 @@ EpsSubPageManager* subPageManagerCreate(EpsPageRegion *pageRegion, EpsPageLayout
 			}
 			return NULL;
 	}
-	debug_msg("%s:%d \t\t<<%s>>: After: width = %d, height = %d, bytesPerLine = %d\n", __FILE__, __LINE__, __FUNCTION__, pageRegion->width, pageRegion->height, pageRegion->bytesPerLine);
+	debuglog(("After: width = %d, height = %d, bytesPerLine = %d", pageRegion->width, pageRegion->height, pageRegion->bytesPerLine));
 	
 	for (i = 0; i < subPageManager->vertical_num; i++) {
 		if (subPageManager->pageLayout != EPS_PAGE_LAYOUT_2x1 && i==0) {
@@ -104,7 +103,7 @@ EpsSubPageManager* subPageManagerCreate(EpsPageRegion *pageRegion, EpsPageLayout
 			}
 		}
 	}
-	debug_msg("%s:%d \t\t<<%s>>: Trace out\n", __FILE__, __LINE__, __FUNCTION__);
+	
 	return subPageManager;	
 }
 

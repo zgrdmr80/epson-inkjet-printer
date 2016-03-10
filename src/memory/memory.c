@@ -47,7 +47,7 @@ eps_heap_usage_end(void)
 void *
 eps_malloc_trace(char * filename, int line, size_t size)
 {
-	void * p = calloc(size + 8/*sizeof(double)*/, 1);
+	void * p = calloc(size + sizeof(unsigned int), 1);
 	if(p) {
 		unsigned int * pi = (unsigned int *) p;
 		*pi++ = size;
@@ -70,38 +70,16 @@ eps_malloc_trace(char * filename, int line, size_t size)
 void
 eps_free_trace(char * filename, int line, void * ptr)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
-	
 	if(ptr) {
 		unsigned int * pi = (unsigned int *) ptr;
-		debug_msg("%s:%d \t\t<<%s>>: Before MEMFREE (%s:%d): address %#x, pi[%p]size %d, leak %d \n", __FILE__, __LINE__, __FUNCTION__, filename, line, ptr, pi, *pi, curusage);
 		pi--;
 		curusage -= *pi;
-		debug_msg("%s:%d \t\t<<%s>>: After MEMFREE (%s:%d): address %#x, pi[%p]size %d, leak %d \n", __FILE__, __LINE__, __FUNCTION__, filename, line, ptr, pi,  *pi, curusage);
+
 #ifdef DEBUG_VERBOSE
 		debuglog(("MEMFREE (%s:%d): address %#x, size %d, leak %d", filename, line, ptr, *pi, curusage));
 #endif
 
 		free(pi);
-	}
-}
-
-void
-eps_free_trace_none(char * filename, int line, void * ptr)
-{
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
-	
-	if(ptr) {
-		unsigned int * pi = (unsigned int *) ptr;
-		debug_msg("%s:%d \t\t<<%s>>: Before MEMFREE (%s:%d): address %#x, pi[%p]size %d, leak %d \n", __FILE__, __LINE__, __FUNCTION__, filename, line, ptr, pi, *pi, curusage);
-		//pi--;
-		curusage -= *pi;
-		debug_msg("%s:%d \t\t<<%s>>: After MEMFREE (%s:%d): address %#x, pi[%p]size %d, leak %d \n", __FILE__, __LINE__, __FUNCTION__, filename, line, ptr, pi,  *pi, curusage);
-#ifdef DEBUG_VERBOSE
-		debuglog(("MEMFREE (%s:%d): address %#x, size %d, leak %d", filename, line, ptr, *pi, curusage));
-#endif
-
-		free(ptr);
 	}
 }
 #else

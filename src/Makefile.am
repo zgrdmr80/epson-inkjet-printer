@@ -25,8 +25,7 @@ epson_inkjet_printer_filter_LDADD = \
 epson_inkjet_printer_filter_SOURCES = \
 	main.c \
 	debuglog.h \
-	raster_to_epson.c raster_to_epson.h \
-	err.c err.h
+	raster_to_epson.c raster_to_epson.h
 
 noinst_HEADERS = \
 	debuglog.h

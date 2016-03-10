@@ -82,11 +82,10 @@ static int
 scale_start_nearest (SCALE scale)
 {
 	int eps_error = 0;
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t Trace in\n", __FILE__, __LINE__, __FUNCTION__);
+
 	EpsScale * lp_scale = (EpsScale *) scale;
 	EpsScaleOpt * lp_data = (EpsScaleOpt *) lp_scale->init_data;
 	MethodNearest * p = (MethodNearest *) eps_malloc(sizeof(MethodNearest));
-	
 
 	if (p) {
 		p->print_one_more = 0.0f;
@@ -98,18 +97,16 @@ scale_start_nearest (SCALE scale)
 		p->scaled_pixels = lp_data->src_print_area_x * p->scale;
 		p->scaled_bytes = p->scaled_pixels * lp_data->bytes_per_pixel;
 		p->scaled_p = (char *) eps_malloc(p->scaled_bytes);
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t Scale method nearest byte= %d, %d\n", __FILE__, __LINE__, __FUNCTION__, p->scaled_bytes, *(p->scaled_p));
 		if (p->scaled_p == NULL) {
 			eps_error = 1;
 		}
 
 		lp_scale->method_data = (void *) p;
-		MethodNearest * lp_method = (MethodNearest *) lp_scale->method_data;
-		debug_msg("%s:%d \t\t<<%s>>:\t\t\t Scale method nearest = %p\n", __FILE__, __LINE__, __FUNCTION__, lp_method->scaled_p);
+
 	} else {
 		eps_error = 1;
 	}
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t Trace out\n", __FILE__, __LINE__, __FUNCTION__);
+
 	return eps_error;
 }
 
@@ -122,7 +119,6 @@ scale_rasterout_nearest (SCALE scale, char * raster, int bytes, int pixels, int 
 
 	char * scaled_p = lp_method->scaled_p;
 	int scaled_bytes = lp_method->scaled_bytes;
-	debug_msg("%s:%d \t\t<<%s>>:\t\t\t Scale rasterout scaled_bytes = %d\n", __FILE__, __LINE__, __FUNCTION__, scaled_bytes);
 	int scaled_pixels = lp_method->scaled_pixels;
 	int printable_lines = lp_method->scale;
 	int bpp = lp_data->bytes_per_pixel;
@@ -171,7 +167,7 @@ scale_rasterout_nearest (SCALE scale, char * raster, int bytes, int pixels, int 
 static int
 scale_end_nearest (SCALE scale)
 {
-	debug_msg("%s:%d \t\t<<%s>>: Trace in \n", __FILE__, __LINE__, __FUNCTION__);
+
 	EpsScale * lp_scale = (EpsScale *) scale;
 	MethodNearest * lp_method = (MethodNearest *) lp_scale->method_data;
 
@@ -181,7 +177,7 @@ scale_end_nearest (SCALE scale)
 	}
 
 	eps_free(lp_method);
-	debug_msg("%s:%d \t\t<<%s>>: Trace out \n", __FILE__, __LINE__, __FUNCTION__);
+	
 	return 0;
 }
 
@@ -211,7 +207,7 @@ eps_init_scale (RASTERPIPE * scale_p, PIPEOPT init_p)
 			p->raster_index = 0;
 			p->x_scale = (float) p->init_data->prt_print_area_x / (float) p->init_data->src_print_area_x;
 			p->y_scale = (float) p->init_data->prt_print_area_y / (float) p->init_data->src_print_area_y;
-			
+
 			debuglog(("src print area x : %d", p->init_data->src_print_area_x));
 			debuglog(("src print area y : %d", p->init_data->src_print_area_y));
 			debuglog(("prt print area x : %d", p->init_data->prt_print_area_x));
@@ -260,22 +256,16 @@ eps_process_scale (RASTERPIPE scale, char* raster_p, int raster_bytes, int pixel
 int
 eps_free_scale (RASTERPIPE scale)
 {
-	debuglog(("TRACE IN eps_free_scale function"));
 	EpsScale * lp_scale = (EpsScale *) scale;
 
 	if (lp_scale) {
-	debuglog(("IN: if(lp_scale)"));
 		lp_scale->end(lp_scale);
-	debuglog(("TEST"));
 		if (lp_scale->init_data) {
-		debuglog(("IN: if (lp_scale->init_data)"));
 			eps_free(lp_scale->init_data);
 		}
-		debuglog(("OUT: if (lp_scale->init_data)"));
 		eps_free(lp_scale);
-	debuglog(("OUT: if(lp_scale)"));
 	}
-	debuglog(("TRACE OUT eps_free_scale function"));
+
 	return 0;
 }
 

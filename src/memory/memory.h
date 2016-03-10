@@ -43,7 +43,6 @@ void eps_free_trace(char * filename, int line, void * ptr);
 #define DUMP_HEAP_USAGE()	eps_heap_usage_end()
 #define eps_malloc(size)	eps_malloc_trace(__FILE__, __LINE__, size)
 #define eps_free(ptr)		eps_free_trace(__FILE__, __LINE__, ptr)
-#define eps_free_none(ptr) eps_free_trace(__FILE__, __LINE__, ptr)
 #else
 #define DUMP_HEAP_INIT()
 #define DUMP_HEAP_USAGE()
