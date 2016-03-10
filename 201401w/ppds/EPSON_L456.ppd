@@ -14,7 +14,7 @@
 *cupsVersion:   1.2
 *cupsManualCopies: True
 *cupsModelNumber:  1
-*cupsFilter:    "application/vnd.cups-raster 0 /opt/epson-inkjet-printer-201401w/cups/lib/filter/epson_inkjet_printer_filter"
+*cupsFilter:    "application/vnd.cups-raster 0 /usr/lib/cups/filter/epson_inkjet_printer_filter"
 *ModelName:     "L456 Series"
 *ShortNickName: "EPSON L456"
 *NickName:      "Epson L456 Series - epson-inkjet-printer 1.0.0-1lsb3.2 (Seiko Epson Corporation LSB 3.2)"
@@ -31,16 +31,16 @@
 *cupsLanguages: "ja en nl fr de it pt es ru ko zh zh_TW mx bp"
 *epcgCoreLibrary: "libEpson_201401w.so.1.0.0"
 *epcgResourceData 1: "Epson_201401w.1.data"
-*epcgWatermarkData Confidential: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG00.EID"
-*epcgWatermarkData Draft: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG01.EID"
-*epcgWatermarkData Urgent: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG02.EID"
-*epcgWatermarkData Priority: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG03.EID"
-*epcgWatermarkData Hot: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG04.EID"
-*epcgWatermarkData DoNotCopy: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG05.EID"
-*epcgWatermarkData ForYourEyesOnly: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG06.EID"
-*epcgWatermarkData ReviewCopy: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG07.EID"
-*epcgWatermarkData TopSecret: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG08.EID"
-*epcgWatermarkData Duplicate: "/opt/epson-inkjet-printer-201401w/watermark/WEPCG09.EID"
+*epcgWatermarkData Confidential: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG00.EID"
+*epcgWatermarkData Draft: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG01.EID"
+*epcgWatermarkData Urgent: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG02.EID"
+*epcgWatermarkData Priority: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG03.EID"
+*epcgWatermarkData Hot: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG04.EID"
+*epcgWatermarkData DoNotCopy: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG05.EID"
+*epcgWatermarkData ForYourEyesOnly: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG06.EID"
+*epcgWatermarkData ReviewCopy: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG07.EID"
+*epcgWatermarkData TopSecret: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG08.EID"
+*epcgWatermarkData Duplicate: "/usr/share/epson-inkjet-printer/201401w/watermark/WEPCG09.EID"
 
 *VariablePaperSize: Yes
 *ParamCustomPageSize Width: 1 points 252.28 612.00
