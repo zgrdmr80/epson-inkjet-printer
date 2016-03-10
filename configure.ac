@@ -60,8 +60,8 @@ AC_SUBST(CUPS_IMAGE_LIBS)
 AC_SUBST(DL_LIBS)
 AC_SUBST(STDCPP_LIBS)
 
-CORE_LIBRARY_PATH=${prefix}/lib"$LSB_ARCH"
-CORE_RESOURCE_PATH=${prefix}/resource
+CORE_LIBRARY_PATH=${prefix}/lib/epson-inkjet-printer
+CORE_RESOURCE_PATH=${prefix}/share/epson-inkjet-printer/resource
 
 AC_SUBST(CORE_LIBRARY_PATH)
 AC_SUBST(CORE_RESOURCE_PATH)
