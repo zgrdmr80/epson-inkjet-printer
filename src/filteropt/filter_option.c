@@ -95,7 +95,7 @@ static EpsFilterOption filterOptionWatermarkDensity = {
 };
 
 static EpsFilterOption filterOptionWatermarkColor = {
-	"ColurWatermark",
+	"ColorWatermark",
 	7,
 	{
 		{"Black", EPS_PAGE_WATERMARK_COLOR_BLACK},
@@ -285,7 +285,7 @@ int setup_filter_option (EpsFilterPrintOption *filterPrintOption)
 	  filterPrintOption->watermarkDensity = value;
 	}
 
-	// Colur of Watermark
+	// Color of Watermark
 	error = get_filter_option(&value, filterOptionWatermarkColor);
 	if (!error) {
 	  filterPrintOption->watermarkColor = value;
