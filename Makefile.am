@@ -10,4 +10,7 @@ doc_DATA = \
 	NEWS \
 	README
 
-EXTRA_DIST = $(doc_DATA)
+ldsohooksdir = $(sysconfdir)/ld.so.conf.d
+ldsohooks_DATA = ld.so.conf.d/99-epson-inkjet-printer.conf
+
+EXTRA_DIST = $(doc_DATA) $(ldsohooks_DATA)
