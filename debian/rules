@@ -5,12 +5,26 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-as-needed
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 SOURCE_NAME    = $(shell dpkg-parsechangelog | sed -n 's/^Source: \(.*\)/\1/ p')
 
+# We will generate .docs and .install files for each driver we are
+# packaging, as well as include the right binaries for 32 and 64 bit.
 DRIVER_NAMES = l100l200 201401w
+DRIVER_PKG_FILES = \
+	debian/epson-inkjet-printer.docs \
+	debian/epson-inkjet-printer.install
 
 %:
 	dh $@ --with autoreconf
 
-override_dh_install:
+debian/%:: debian/%.in
+	@set -eux
+	filename=$(basename $@) ; \
+	extension=$(suffix $@) ; \
+	for driver in $(DRIVER_NAMES) ; do \
+	  rm -f $$@ ; \
+	  sed "s/@DRIVER_NAME@/$${driver}/g" $< > $${filename}-$${driver}$${extension} ; \
+	done
+
+override_dh_install: $(DRIVER_PKG_FILES)
 	@set -eux
 	dh_install
 
