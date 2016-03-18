@@ -90,6 +90,28 @@ Description: EPSON L120 Series - Epson Inkjet Printer Driver
  For detail list of supported printer, please refer to below site:
  http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX
 
+Package: epson-inkjet-printer-201215w
+Architecture: i386 amd64
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         epson-inkjet-printer-filter
+Description: M100/M200 Series - Epson Inkjet Printer Driver
+ This software is a filter program used with Common UNIX Printing
+ System (CUPS) from the Linux. This can supply the high quality print
+ with Seiko Epson Color Ink Jet Printers.
+ .
+ This printer driver is supporting the following printers.
+ .
+ M100
+ M101
+ M105
+ M200
+ M201
+ M205
+ .
+ For detail list of supported printer, please refer to below site:
+ http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX
+
 Package: epson-inkjet-printer-201207w
 Architecture: i386 amd64
 Depends: ${shlibs:Depends},
@@ -127,6 +149,7 @@ Depends: ${misc:Depends},
          epson-inkjet-printer-filter,
          epson-inkjet-printer-l100l200,
          epson-inkjet-printer-201207w,
+         epson-inkjet-printer-201215w,
          epson-inkjet-printer-201310w,
          epson-inkjet-printer-201401w
 Description: printer driver for Epson Inkjet that use ESC/P
