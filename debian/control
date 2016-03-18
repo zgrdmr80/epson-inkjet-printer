@@ -75,8 +75,7 @@ Description: L455_L456_L36x_L22x_L31x_L13x Series - Epson Inkjet Printer Driver
 
 Package: printer-driver-escp
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          epson-inkjet-printer-filter,
          epson-inkjet-printer-l100l200,
          epson-inkjet-printer-201401w
