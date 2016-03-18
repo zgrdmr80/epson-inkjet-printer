@@ -7,7 +7,7 @@ SOURCE_NAME    = $(shell dpkg-parsechangelog | sed -n 's/^Source: \(.*\)/\1/ p')
 
 # We will generate .docs and .install files for each driver we are
 # packaging, as well as include the right binaries for 32 and 64 bit.
-DRIVER_NAMES = l100l200 201310w 201401w
+DRIVER_NAMES = l100l200 201207w 201310w 201401w
 DRIVER_PKG_FILES = \
 	debian/epson-inkjet-printer.docs \
 	debian/epson-inkjet-printer.install
