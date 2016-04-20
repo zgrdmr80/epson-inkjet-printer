@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 4.0.0),
                dh-autoreconf,
                libcupsys2-dev | libcups2-dev,
                libcupsimage2-dev,
-               libjpeg8,
+               libjpeg-dev,
                libstdc++6
 Standards-Version: 3.7.2
 
